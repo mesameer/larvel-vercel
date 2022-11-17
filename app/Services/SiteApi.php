@@ -37,7 +37,6 @@ class SiteApi
         $this->text_block_4= '';
 	}
     public function generateApiResponse($requestAll) { 
-		
         $keyword_location_url = '';
         $site = Site::on('onthefly')
                 ->select('*')
@@ -63,6 +62,9 @@ class SiteApi
 				if(!empty($requestAll['zip'])) {
 					$this->location = $requestAll['zip'];
 					$this->zip = $requestAll['zip'];
+					if(!empty($requestAll['service'])) {
+						$this->ServicePage = 1;
+					}
 				}
 			}
 		}
@@ -71,10 +73,10 @@ class SiteApi
 								->where('type',$this->type)
 								->first();
        
-        $allServicesList = $this->getServicesList($this->custom_keyword,$this->location,$this->type,$this->zip);
-        $zipcodes = $this->getZipcodesList($this->state,$this->city,$this->custom_keyword,$this->ServicePage);
-        $textBlockAndMetaTagInfomation = $this->getTextBlockAndMetaTagInfomation($this->custom_keyword,$this->location,$this->phone,$this->type,$this->city);
-		$this->getLatLongPhone($this->state,$this->city,$this->zip,$this->type);
+        $allServicesList = $this->getServicesList();
+        $zipcodes = $this->getZipcodesList();
+        $textBlockAndMetaTagInfomation = $this->getTextBlockAndMetaTagInfomation();
+		$this->getLatLongPhone();
 
 		/** 
 		 *  Here We are stating schemas for api
@@ -130,17 +132,17 @@ class SiteApi
     }
 
 
-    public function getServicesList($custom_keyword,$location,$type,$zip) {
+    public function getServicesList() {
 		$ralated_service = $this->getServicesArray();
-		$keyWordId = $this->getKeywordId($custom_keyword);
+		$keyWordId = $this->getKeywordId($this->custom_keyword);
         $services = [];
 		$serviceData = [];
 		foreach ($ralated_service as $key =>  $service)	{
 			if($key == $keyWordId || strtolower($service) == 'towing') {
 				continue;
 			}
-            if($type =='zip') {
-                $url = $this->makeUrl($zip)."/".$this->makeUrl($service);
+            if($this->type =='zip') {
+                $url = $this->makeUrl($this->zip)."/".$this->makeUrl($service);
             } else {
                 $url = '/'.$this->makeUrl($service);  
             }
@@ -184,14 +186,14 @@ class SiteApi
 		return strtolower($final_string);
 	}
 
-    function getZipcodesList($state,$city,$custom_keyword,$servicePage) {
-		$allZipCode  = $this->getDistinctZipcodeByCity($state,$city);
+    function getZipcodesList() {
+		$allZipCode  = $this->getDistinctZipcodeByCity();
 		$zipcodeData=[];
 		$zipcodes=[];
 
 		foreach ($allZipCode as $zip){
-			if(!empty($servicePage)) {
-				$url= $this->makeUrl($zip)."/".$this->makeUrl($custom_keyword);
+			if(!empty($this->ServicePage)) {
+				$url= $this->makeUrl($zip)."/".$this->makeUrl($this->custom_keyword);
 			} else {
 				$url='/'.$this->makeUrl($zip);
 			}
@@ -202,12 +204,12 @@ class SiteApi
 		return $zipcodes;
 	}
 
-    function getDistinctZipcodeByCity($state,$city) {
+    function getDistinctZipcodeByCity() {
 		$result = LocationDetail::on('onthefly')
                     ->select('zip')
                     ->distinct()
-                    ->where('state_name',$state)
-                    ->where('city',$city)
+                    ->where('state_name',$this->state)
+                    ->where('city',$this->city)
                     ->get()
                     ->toArray();
 		$allZipcodeList = [];
@@ -217,26 +219,26 @@ class SiteApi
 		sort($allZipcodeList);
 		return $allZipcodeList;
 	}
-    function getTextBlockAndMetaTagInfomation($custom_keyword,$location,$phone,$type,$city) {
+    function getTextBlockAndMetaTagInfomation() {
 		$textBlockArray = [];
 		$textBlockIdArray = [];
 		$metaInfomationArray = [];
 		$textBlockMetaInfomation = [];
 		$keyWordId =null;
-	    $keyWordId = $this->getKeywordId($custom_keyword);
+	    $keyWordId = $this->getKeywordId($this->custom_keyword);
         $mainServiceData = SiteContent::on('onthefly')
                     ->select('*')
                     ->distinct()
-                    ->where('location',$location)
+                    ->where('location',$this->location)
                     ->where('service_id',$keyWordId)
-                    ->where('type',$type)
+                    ->where('type',$this->type)
                     ->first();
 		if(!empty($mainServiceData->meta_heading)) {
 			$searchKey=[
 				"[keyword]","[phone]","[city-state-zipcode]","[city]"
 			];
 			$replaceKey=[
-				ucwords($custom_keyword),$phone,ucwords($location),$city
+				ucwords($this->custom_keyword),$this->phone,ucwords($this->location),$this->city
 			];
 			
 			if(!empty($mainServiceData->text_block_1) || !empty($mainServiceData->text_block_2) || !empty($mainServiceData->text_block_3) || !empty($mainServiceData->text_block_4)) {
@@ -275,7 +277,7 @@ class SiteApi
 				}
 			}
 		} else {
-			$textBlockMetaInfomation = $this->insertContentIfNotExist($location,$phone,$keyWordId,$custom_keyword,$type,$city);
+			$textBlockMetaInfomation = $this->insertContentIfNotExist();
 		}
 		if(!empty($textBlockMetaInfomation)) {
 				return $textBlockMetaInfomation;
@@ -284,10 +286,10 @@ class SiteApi
 		}
 	}
 
-	function insertContentIfNotExist($location,$phone,$keyWordId,$custom_keyword,$type,$city) {
+	function insertContentIfNotExist() {
 		$textBlockMetaInfomation = [];
 		$customeTag = $this->getCustomTag();
-		$allMetaTag = $this->getMetaTag($type);
+		$allMetaTag = $this->getMetaTag();
 		$generateBlockArray = $this->getTextBlock();
 		$customTagArrayWithRandomString = [];
 		$allMetaTagsArray = [];
@@ -351,8 +353,8 @@ class SiteApi
             }
         }
         SiteContent::on('onthefly')->create([
-            'service_id' => $keyWordId,
-            'type' => $type,
+            'service_id' => $this->getKeywordId($this->custom_keyword),
+            'type' => $this->type,
             'text_block_1' => $text_block_1,
             'text_block_2' => $text_block_2,
             'text_block_3' => $text_block_3,
@@ -360,14 +362,14 @@ class SiteApi
             'meta_heading' => $meta_heading_h1,
             'meta_title' => $meta_title,
             'meta_description' => $meta_description,
-            'location' => $location
+            'location' => $this->location
         ]);
         
 		$searchKey=[
 			"[keyword]","[phone]","[city-state-zipcode]","[city]"
 		];
 		$replaceKey=[
-			ucwords($custom_keyword),$phone,ucwords($location),$city
+			ucwords($this->custom_keyword),$this->phone,ucwords($this->location),$this->city
 		];
 		
 		if(!empty($text_block_1) || !empty($text_block_2) || !empty($text_block_3) || !empty($text_block_4)) {
@@ -422,10 +424,10 @@ class SiteApi
 		return $allTagsArray;
 	}
 
-	function getMetaTag($type) {
+	function getMetaTag() {
 		$mainMetaArray = Template::on('onthefly')
                     ->select('meta_title','meta_heading','meta_description')
-                    ->where('type',$type)
+                    ->where('type',$this->type)
                     ->get()->toArray();
         if(!empty($mainMetaArray)) {
             return $mainMetaArray[0];
@@ -450,16 +452,16 @@ class SiteApi
 		}
 	}
 
-    function getLatLongPhone($state,$city,$zip,$type) {
+    function getLatLongPhone() {
 		$query = '';
-        if($type == 'zip') {
-			$query = 'SELECT location_detail.zip_latitude as latitude ,location_detail.zip_longitude as longitude,location_detail.areacode,phone.phoneNumber FROM location_detail LEFT JOIN phone ON location_detail.areacode=phone.areacode where location_detail.approved=1 and zip="'.$zip.'" limit 1';
-		} else if($type == 'state') {
-			$query = "SELECT location_detail.state_latitude as latitude,location_detail.state_longitude as longitude,location_detail.areacode,phone.phoneNumber FROM location_detail LEFT JOIN phone ON location_detail.areacode=phone.areacode where location_detail.approved=1 and state_name=".'"'.$state.'"'." COLLATE NOCASE limit 1";
-		} else if($type == 'county') {
-			$query = "SELECT location_detail.county_latitude as latitude,location_detail.county_longitude as longitude,location_detail.areacode,phone.phoneNumber FROM location_detail LEFT JOIN phone ON location_detail.areacode=phone.areacode where location_detail.approved=1 and state_name=".'"'.$state.'"'." COLLATE NOCASE and county=".'"'.$county.'"'." COLLATE NOCASE limit 1";
-		} else if($type == 'city') {			
-			$query = "SELECT location_detail.city_latitude as latitude,location_detail.city_longitude as longitude,location_detail.areacode,phone.phoneNumber FROM location_detail LEFT JOIN phone ON location_detail.areacode=phone.areacode where location_detail.approved=1 and state_name=".'"'.$state.'"'." COLLATE NOCASE and city=".'"'.$city.'"'." COLLATE NOCASE limit 1";
+        if($this->type == 'zip') {
+			$query = 'SELECT location_detail.zip_latitude as latitude ,location_detail.zip_longitude as longitude,location_detail.areacode,phone.phoneNumber FROM location_detail LEFT JOIN phone ON location_detail.areacode=phone.areacode where location_detail.approved=1 and zip="'.$this->zip.'" limit 1';
+		} else if($this->type == 'state') {
+			$query = "SELECT location_detail.state_latitude as latitude,location_detail.state_longitude as longitude,location_detail.areacode,phone.phoneNumber FROM location_detail LEFT JOIN phone ON location_detail.areacode=phone.areacode where location_detail.approved=1 and state_name=".'"'.$this->state.'"'." COLLATE NOCASE limit 1";
+		} else if($this->type == 'county') {
+			$query = "SELECT location_detail.county_latitude as latitude,location_detail.county_longitude as longitude,location_detail.areacode,phone.phoneNumber FROM location_detail LEFT JOIN phone ON location_detail.areacode=phone.areacode where location_detail.approved=1 and state_name=".'"'.$this->state.'"'." COLLATE NOCASE and county=".'"'.$this->county.'"'." COLLATE NOCASE limit 1";
+		} else if($this->type == 'city') {			
+			$query = "SELECT location_detail.city_latitude as latitude,location_detail.city_longitude as longitude,location_detail.areacode,phone.phoneNumber FROM location_detail LEFT JOIN phone ON location_detail.areacode=phone.areacode where location_detail.approved=1 and state_name=".'"'.$this->state.'"'." COLLATE NOCASE and city=".'"'.$this->city.'"'." COLLATE NOCASE limit 1";
 		}
 		if(!empty($query)) {
 			$city = DB::connection('onthefly')->select($query);

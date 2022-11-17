@@ -33,7 +33,7 @@ class SeoApi extends SiteApi {
 		$schemasArray['logoSchemas'] = $this->getLogo();
 		$schemasArray['howTOSchemas'] = $this->getHOwTO();
 		$schemasArray['videoSchemas'] = $this->getVideos();
-		$schemasArray['speakableSchemas'] = $this->getSpeakable();
+		// $schemasArray['speakableSchemas'] = $this->getSpeakable();
 		$schemasArray['localBusinessSchemas'] = $this->getLocalBusiness();
 		$schemasArray['serviceSchemas'] = $this->getService();
 		return json_encode([$schemasArray]);
