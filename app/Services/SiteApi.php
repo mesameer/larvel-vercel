@@ -57,7 +57,7 @@ class SiteApi
 			$this->type =$requestAll['type'];
 			if($this->type == 'service' || $this->type == 'zip') {
 				if(!empty($requestAll['service'])) {
-					$this->custom_keyword = $requestAll['service'];
+					$this->custom_keyword = ucwords(implode(' ',explode('-',$requestAll['service'])));
 				}
 				if(!empty($requestAll['zip'])) {
 					$this->location = $requestAll['zip'];
