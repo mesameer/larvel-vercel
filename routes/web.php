@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\SqliteDatabaseScriptController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,4 +15,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::middleware('database')->group(function () {
+    Route::get('/convert-mysql-sqlite', [SqliteDatabaseScriptController::class, 'index']);
 });

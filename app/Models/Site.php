@@ -11,7 +11,4 @@ class Site extends Model
     protected $table = "site";
     protected $primaryKey = "id";
     protected $fillable = ['id','title','description','logo','state','city','domain','latitude','longitude','service_id'];
-
-    
-
 }
