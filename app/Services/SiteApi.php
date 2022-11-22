@@ -77,7 +77,9 @@ class SiteApi
         $zipcodes = $this->getZipcodesList();
         $textBlockAndMetaTagInfomation = $this->getTextBlockAndMetaTagInfomation();
 		$this->getLatLongPhone();
-
+		if(!empty($this->phone)) {
+			$this->phone ='('.substr($this->phone,0,3).")-".substr($this->phone,3,3)."-".substr($this->phone,6);
+		}
 		/** 
 		 *  Here We are stating schemas for api
 		*/
