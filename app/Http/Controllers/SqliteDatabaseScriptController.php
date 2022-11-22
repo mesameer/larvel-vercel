@@ -10,7 +10,7 @@ use  File;
 
 class SqliteDatabaseScriptController extends Controller
 {
-    public function index() {
+    public function index(Request $request) {
         $tableData = '';
         $allTables = DB::Connection('onthefly')->select('SHOW TABLES');
         $databaseName = DB::Connection('onthefly')->getDatabaseName();
@@ -22,9 +22,9 @@ class SqliteDatabaseScriptController extends Controller
                 $tables.="CREATE TABLE " .$row->$tableInDatabase. "(";
                 foreach($allRecord as $result) {
                     if($result == 'id') {
-                      $tables.="'id'	INTEGER NOT NULL,";
+                        $tables.="'id'	INTEGER NOT NULL,";
                     } else {
-                      $tables.="'$result'	TEXT NOT NULL,";
+                        $tables.="'$result'	TEXT,";
                     }
                 }  
                 $tables.=' PRIMARY KEY("id" AUTOINCREMENT)';
@@ -44,6 +44,9 @@ class SqliteDatabaseScriptController extends Controller
                         $newValue = array_map(function($val) { return str_replace("'","''",$val); }, (array)$row);
                         $response = $db->exec("INSERT INTO " .$table->$tableInDatabase."(". "'" . implode ( "', '", array_keys($newValue) ) . "'" .") VALUES (". "'" . implode ( "', '", array_values($newValue) ) . "'" .")"); 
                     }
+                }
+                if(File::exists(public_path('allSiteDatabase/'.$databaseName.'.sqlite'))) {
+                    echo "$databaseName database is generated succesfully";
                 }
             } catch(Exception $exception) { 
                 echo $exception->getMessage();
