@@ -18,6 +18,7 @@ class DatabaseConnection
     */
 
     public function handle(Request $request, Closure $next) {
+        // $request->domain = 'towingminneapolis.vercel.com';
         if(!empty($request->domain)) {
             $databaseInformation = DB::table("site_database_name")
             ->select("database_name")
