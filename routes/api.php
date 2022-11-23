@@ -20,6 +20,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::middleware('database')->group(function () {
     Route::get('/site', [SiteController::class, 'index']);
-    Route::get('/show', [SiteController::class, 'showData']);
+    Route::post('/contact-form', [SiteController::class, 'contactForm']);
 });
 
