@@ -8,6 +8,15 @@ use App\Mail\SendMail;
 class EmailController extends Controller
 {
     public function contactForm(Request $request) {
+        if(empty($request->contactName)) {
+            return  response()->json(['response' => 'contact name field is required'],400);
+        }
+        if(empty($request->email)) {
+            return  response()->json(['response' => 'email field is required'],400);
+        }
+        if(empty($request->phone)) {
+            return response()->json(['response' => 'phone field is required'],400);
+        }
         $mailData = [
             'domain' => $request->domain,
             'contactName' => $request->contactName,
@@ -15,9 +24,9 @@ class EmailController extends Controller
             'phone' => $request->phone,
         ];
         if(Mail::to('alan@logicalcommerce.com')->send(new SendMail($mailData))) {
-            return json_encode(['status' => '200','message' => 'Email successfully sent']);
+            return  response()->json(['response' => 'Email successfully sent']);
         } else {
-            return json_encode(['status' => '500','message' => 'something went wrong']);
+            return  response()->json(['response' => 'Email failed'],400);
         }
     }
 }
