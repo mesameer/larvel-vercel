@@ -59,8 +59,8 @@ class SqliteDatabaseScriptController extends Controller
 
     public function test() {
         
-        exec('mysqldump --user=root --password=HdwfQrD!rtsC4Ij& --host=localhost --no-data nextjs > /var/www/html/api/public/allSiteDatabase/file.sql 2>&1', $output);
-        echo "<pre>";print_r($output); 
+       // exec('mysqldump --user=root --password=HdwfQrD!rtsC4Ij& --host=localhost --no-data nextjs > /var/www/html/api/public/allSiteDatabase/file.sql 2>&1', $output);
+        exec('mysqldump --user=root --password="HdwfQrD!rtsC4Ij&" nextjs > /var/www/html/api/public/allSiteDatabase/fileNew.sql');
         // $filenametostore='india';
         // Storage::disk('sftp')->put('/home/minncp/htdocs/towingminneapolis.us/demo.txt','new data here');
     }
