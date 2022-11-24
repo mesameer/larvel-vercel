@@ -66,7 +66,7 @@ class SqliteDatabaseScriptController extends Controller
     }
 
     public function exportStructure() {
-        $command = "mysqldump --opt -h '127.0.0.1' -u 'root' -p  ". "nextjs1 | gzip > dumpQ.sql";
+        $command = "mysqldump --opt -h '64.71.158.14' -u 'root' -p 'HdwfQrD!rtsC4Ij&' ". "nextjs | gzip > dumpQ.sql";
         system($command);
         die;
         //  DB::statement("CREATE DATABASE shahjad1");
