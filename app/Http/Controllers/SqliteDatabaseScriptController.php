@@ -58,9 +58,9 @@ class SqliteDatabaseScriptController extends Controller
     }
 
     public function test() {
-        // var_dump(exec('mysqldump --user=root --password=HdwfQrD!rtsC4Ij& --host=64.71.158.14 --no-data nextjs > public_path("allSiteDatabase/file.sql")'));
-        exec('mysqldump --user=root --password=HdwfQrD!rtsC4Ij& --host=64.71.158.14 --no-data nextjs > /var/www/html/api/public/allSiteDatabase/file.sql 2>&1', $output);
-        echo "<pre>";print_r($output);  // to see the response to your command
+        
+        exec('mysqldump --user=root --password=HdwfQrD!rtsC4Ij& --host=127.0.0.1 --no-data nextjs > /var/www/html/api/public/allSiteDatabase/file.sql 2>&1', $output);
+        echo "<pre>";print_r($output); 
         // $filenametostore='india';
         // Storage::disk('sftp')->put('/home/minncp/htdocs/towingminneapolis.us/demo.txt','new data here');
     }
