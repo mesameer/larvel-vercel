@@ -58,7 +58,32 @@ class SqliteDatabaseScriptController extends Controller
     }
 
     public function test() {
-        $filenametostore='india';
-        Storage::disk('sftp')->put('/home/minncp/htdocs/towingminneapolis.us/demo.txt','new data here');
+        $command = "mysqldump --opt -h '127.0.0.1' -u 'root' -p  ". "nextjs1 | gzip > dumpQ.sql";
+        system($command);
+        die;
+        // $filenametostore='india';
+        // Storage::disk('sftp')->put('/home/minncp/htdocs/towingminneapolis.us/demo.txt','new data here');
+    }
+
+    public function exportStructure() {
+        $command = "mysqldump --opt -h '127.0.0.1' -u 'root' -p  ". "nextjs1 | gzip > dumpQ.sql";
+        system($command);
+        die;
+        //  DB::statement("CREATE DATABASE shahjad1");
+        //     config(['database.connections.onthefly' => [
+        //         'driver' => 'mysql',
+        //         'host' => env('DB_HOST', '127.0.0.1'),
+        //         'port' => env('DB_PORT', '3306'),
+        //         'database' => 'shahjad1',
+        //         'username' => env('DB_USERNAME', 'root'),
+        //         'password' => env('DB_PASSWORD', ''),
+        //     ]]);
+        // DB::connection('onthefly');
+        // DB::connection('onthefly')->unprepared(file_get_contents(public_path('dump.sql')));
+        \Spatie\DbDumper\Databases\MySql::create()
+        ->setDbName('nextjs1')
+        ->setUserName('root')
+        ->setPassword('')
+        ->dumpToFile(public_path('dump1211.sql'));
     }
 }
