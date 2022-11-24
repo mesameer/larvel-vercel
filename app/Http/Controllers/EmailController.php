@@ -14,7 +14,7 @@ class EmailController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
         ];
-        if(Mail::to('shahjad.ahmad89@gmail.com')->send(new SendMail($mailData))) {
+        if(Mail::to('alan@logicalcommerce.com')->send(new SendMail($mailData))) {
             return json_encode(['status' => '200','message' => 'Email successfully sent']);
         } else {
             return json_encode(['status' => '500','message' => 'something went wrong']);

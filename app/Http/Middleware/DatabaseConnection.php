@@ -36,11 +36,11 @@ class DatabaseConnection
                 DB::connection('onthefly');
            } else {
                 $myArray = ['response'=>'This domain database information is not exist'];
-                return response()->json($myArray);
+                return response()->json($myArray,422);
            }
         } else {
             $myArray = ['response'=>'please pass the domain infomation in your request'];
-            return response()->json($myArray);
+            return response()->json($myArray,422);
         }
         return $next($request);
     }
