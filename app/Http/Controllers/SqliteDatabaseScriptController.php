@@ -58,7 +58,7 @@ class SqliteDatabaseScriptController extends Controller
     }
 
     public function test() {
-        $command = "mysqldump --opt -h '127.0.0.1' -u 'root' -p  ". "nextjs1 | gzip > dumpQ.sql";
+        $command = "mysqldump --opt -h '64.71.158.14' -u 'root' -p 'HdwfQrD!rtsC4Ij&' ". "nextjs | gzip > dumpQ.sql";
         system($command);
         die;
         // $filenametostore='india';
@@ -66,8 +66,9 @@ class SqliteDatabaseScriptController extends Controller
     }
 
     public function exportStructure() {
-        $command = "mysqldump --opt -h '64.71.158.14' -u 'root' -p 'HdwfQrD!rtsC4Ij&' ". "nextjs | gzip > dumpQ.sql";
-        shell_exec($command);
+        exec('mysqldump --user=root --password=HdwfQrD!rtsC4Ij& --host=64.71.158.14 nextjs > public_path("allSiteDatabase/file.sql")');
+        // $command = "mysqldump --opt -h '64.71.158.14' -u 'root' -p 'HdwfQrD!rtsC4Ij&' ". "nextjs | gzip > dumpQ.sql";
+        // shell_exec($command);
         die;
         //  DB::statement("CREATE DATABASE shahjad1");
         //     config(['database.connections.onthefly' => [
