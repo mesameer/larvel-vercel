@@ -58,14 +58,14 @@ class SiteApi
 			if(!empty($allTemplatesRow)) {
 				$this->type = $requestAll['type'];
 			} else {
-				return response()->json(['response' =>'Please check you parameter'],400);
+				return response()->json(['response' =>'Please check your parameter'],400);
 			}
 			if($this->type == 'service' || $this->type == 'zip') {
 				if(!empty($requestAll['service'])) {
 					if(!empty($this->getKeywordId(ucwords(implode(' ',explode('-',$requestAll['service'])))))) {
 						$this->custom_keyword = ucwords(implode(' ',explode('-',$requestAll['service'])));
 					} else {
-						return response()->json(['response' =>'Please check you parameter'],400);
+						return response()->json(['response' =>'Please check your parameter'],400);
 					}
 				}
 			}
@@ -82,14 +82,14 @@ class SiteApi
 							$this->ServicePage = 1;
 						}
 					} else {
-						return response()->json(['response' =>'Please check you parameter'],400);
+						return response()->json(['response' =>'Please check your parameter'],400);
 					}
 				} else {
-					return response()->json(['response' =>'Please check you parameter'],400);
+					return response()->json(['response' =>'Please check your parameter'],400);
 				}
 			}
 		}  else {
-			return response()->json(['response' =>'Please check you parameter'],400);
+			return response()->json(['response' =>'Please check your parameter'],400);
 		}
        
        
