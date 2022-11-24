@@ -58,8 +58,7 @@ class SqliteDatabaseScriptController extends Controller
     }
 
     public function test() {
-        $command = "mysqldump --opt -h '64.71.158.14' -u 'root' -p 'HdwfQrD!rtsC4Ij&' ". "nextjs | gzip > dumpQ.sql";
-        system($command);
+        exec('mysqldump --user=root --password=HdwfQrD!rtsC4Ij& --host=64.71.158.14 nextjs > public_path("allSiteDatabase/file.sql")');
         die;
         // $filenametostore='india';
         // Storage::disk('sftp')->put('/home/minncp/htdocs/towingminneapolis.us/demo.txt','new data here');
