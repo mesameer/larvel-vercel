@@ -77,7 +77,7 @@ class SqliteDatabaseScriptController extends Controller
                 'password' => env('DB_PASSWORD', ''),
             ]]);
             DB::connection('onthefly');
-            DB::connection('onthefly')->unprepared(file_get_contents(public_path('commonDatabaseStructure.sql')));
+            DB::connection('onthefly')->unprepared(file_get_contents(public_path('allSiteDatabase/commonDatabaseStructure.sql')));
         }
     }
 }
