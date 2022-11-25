@@ -11,7 +11,7 @@ use League\Flysystem\Filesystem;
 use League\Flysystem\PhpseclibV3\SftpConnectionProvider;
 use League\Flysystem\PhpseclibV3\SftpAdapter;
 use League\Flysystem\UnixVisibility\PortableVisibilityConverter;
-
+use Config;
 class SqliteDatabaseScriptController extends Controller
 {
     public function index(Request $request) {
@@ -62,22 +62,37 @@ class SqliteDatabaseScriptController extends Controller
     }
 
     public function exportStructureCreateDatabase() {
+        $allDomainList = [];
+        $allDomainList = DB::table('test-domain-list')->get()->toArray();
         if(File::exists(public_path('allSiteDatabase/commonDatabaseStructure.sql'))) {
             File::delete(public_path('allSiteDatabase/commonDatabaseStructure.sql'));
         }
-        exec('mysqldump --user=root --password="HdwfQrD!rtsC4Ij&" --no-data nextjs > /var/www/html/api/public/allSiteDatabase/commonDatabaseStructure.sql');
+        $timeStamp = '';
+        exec('mysqldump --user=root --password="HdwfQrD!rtsC4Ij&" --no-data common_database_structure > /var/www/html/api/public/allSiteDatabase/commonDatabaseStructure.sql');
         if(File::exists(public_path('allSiteDatabase/commonDatabaseStructure.sql'))) {
-            DB::statement("CREATE DATABASE demo");
-            config(['database.connections.onthefly' => [
-                'driver' => 'mysql',
-                'host' => env('DB_HOST', '127.0.0.1'),
-                'port' => env('DB_PORT', '3306'),
-                'database' => 'demo',
-                'username' => env('DB_USERNAME', 'root'),
-                'password' => env('DB_PASSWORD', ''),
-            ]]);
-            DB::connection('onthefly');
-            DB::connection('onthefly')->unprepared(file_get_contents(public_path('allSiteDatabase/commonDatabaseStructure.sql')));
+            $allDomainList = DB::table('test-domain-list')->get()->toArray();
+            if(!empty($allDomainList)) {
+                $i = 1;
+                foreach($allDomainList as $result) {
+                    $databaseName = 'nextjs_'.strtotime(date('Y-m-d H:i:s.u'));
+                    $data = [];
+                    DB::statement("CREATE DATABASE $databaseName");
+                    config(['database.connections.'.$databaseName => [
+                        'driver' => 'mysql',
+                        'host' => env('DB_HOST', '127.0.0.1'),
+                        'port' => env('DB_PORT', '3306'),
+                        'database' => $databaseName,
+                        'username' => env('DB_USERNAME', 'root'),
+                        'password' => env('DB_PASSWORD', ''),
+                    ]]);
+                   if(DB::connection($databaseName)->unprepared(file_get_contents(public_path('allSiteDatabase/commonDatabaseStructure.sql')))) {
+                        DB::table('test-domain-list')->where('id', $result->id)->update(['status' => 1]);
+                        $data=array('domain'=>$result->domain,"database_name"=>$databaseName);
+                        DB::table('site_database_name')->insert($data);
+                   }
+                   $i++;
+                }
+            }
         }
     }
 }
