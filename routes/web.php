@@ -21,4 +21,4 @@ Route::middleware('database')->group(function () {
     Route::get('/convert-mysql-sqlite', [SqliteDatabaseScriptController::class, 'index']);
 });
 
-Route::get('/test', [SqliteDatabaseScriptController::class, 'test']);
+Route::get('/export-structure-create-database', [SqliteDatabaseScriptController::class, 'exportStructureCreateDatabase']);

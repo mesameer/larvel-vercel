@@ -58,30 +58,26 @@ class SqliteDatabaseScriptController extends Controller
     }
 
     public function test() {
-        exec('mysqldump --user=root --password="HdwfQrD!rtsC4Ij&" --no-data nextjs > /var/www/html/api/public/allSiteDatabase/fileNew1.sql');
+        
     }
 
-    public function exportStructure() {
-        exec('mysqldump --user=root --password=HdwfQrD!rtsC4Ij& --host=64.71.158.14 nextjs > public_path("allSiteDatabase/file.sql")');
-        // $command = "mysqldump --opt -h '64.71.158.14' -u 'root' -p 'HdwfQrD!rtsC4Ij&' ". "nextjs | gzip > dumpQ.sql";
-        // shell_exec($command);
-        die;
-         DB::statement("CREATE DATABASE shahjad1");
-
+    public function exportStructureCreateDatabase() {
+        if(File::exists(public_path('allSiteDatabase/commonDatabaseStructure.sql'))) {
+            File::delete(public_path('allSiteDatabase/commonDatabaseStructure.sql'));
+        }
+        exec('mysqldump --user=root --password="HdwfQrD!rtsC4Ij&" --no-data nextjs > /var/www/html/api/public/allSiteDatabase/commonDatabaseStructure.sql');
+        if(File::exists(public_path('allSiteDatabase/commonDatabaseStructure.sql'))) {
+            DB::statement("CREATE DATABASE demo");
             config(['database.connections.onthefly' => [
                 'driver' => 'mysql',
                 'host' => env('DB_HOST', '127.0.0.1'),
                 'port' => env('DB_PORT', '3306'),
-                'database' => 'shahjad1',
+                'database' => 'demo',
                 'username' => env('DB_USERNAME', 'root'),
                 'password' => env('DB_PASSWORD', ''),
             ]]);
-        DB::connection('onthefly');
-        DB::connection('onthefly')->unprepared(file_get_contents(public_path('dump.sql')));
-        \Spatie\DbDumper\Databases\MySql::create()
-        ->setDbName('nextjs1')
-        ->setUserName('root')
-        ->setPassword('')
-        ->dumpToFile(public_path('dump1211.sql'));
+            DB::connection('onthefly');
+            DB::connection('onthefly')->unprepared(file_get_contents(public_path('commonDatabaseStructure.sql')));
+        }
     }
 }
