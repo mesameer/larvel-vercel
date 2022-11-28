@@ -88,6 +88,8 @@ class SiteApi
 					return response()->json(['response' =>'Please check your parameter'],400);
 				}
 			}
+		} else {
+			$allTemplatesRow = Template::on('onthefly')->select('html')->where('type',$this->type)->first();
 		}
        
         $allServicesList = $this->getServicesList();
