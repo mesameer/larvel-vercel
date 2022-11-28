@@ -14,7 +14,7 @@ use League\Flysystem\UnixVisibility\PortableVisibilityConverter;
 use Config;
 class SqliteDatabaseScriptController extends Controller
 {
-    public function index(Request $request) {
+    public function convertMysqlSqlite(Request $request) {
         $tableData = '';
         $allTables = DB::Connection('onthefly')->select('SHOW TABLES');
         $databaseName = DB::Connection('onthefly')->getDatabaseName();
@@ -63,16 +63,15 @@ class SqliteDatabaseScriptController extends Controller
 
     public function exportStructureCreateDatabase() {
         $allDomainList = [];
-        $allDomainList = DB::table('test-domain-list')->get()->toArray();
         if(File::exists(public_path('allSiteDatabase/commonDatabaseStructure.sql'))) {
             File::delete(public_path('allSiteDatabase/commonDatabaseStructure.sql'));
         }
         $timeStamp = '';
+        $totalDatabaseCount = 0;
         exec('mysqldump --user=root --password="HdwfQrD!rtsC4Ij&" --no-data common_database_structure > /var/www/html/api/public/allSiteDatabase/commonDatabaseStructure.sql');
         if(File::exists(public_path('allSiteDatabase/commonDatabaseStructure.sql'))) {
             $allDomainList = DB::table('test-domain-list')->get()->toArray();
             if(!empty($allDomainList)) {
-                $i = 1;
                 foreach($allDomainList as $result) {
                     $databaseName = 'nextjs_'.strtotime(date('Y-m-d H:i:s.u'));
                     $data = [];
@@ -85,14 +84,18 @@ class SqliteDatabaseScriptController extends Controller
                         'username' => env('DB_USERNAME', 'root'),
                         'password' => env('DB_PASSWORD', ''),
                     ]]);
-                   if(DB::connection($databaseName)->unprepared(file_get_contents(public_path('allSiteDatabase/commonDatabaseStructure.sql')))) {
+                   if(DB::connection($databaseName)->unprepared(file_get_contents(public_path('allSiteDatabase/commonDatabaseStructure.sql')))) {    $totalDatabaseCount+=1;
                         DB::table('test-domain-list')->where('id', $result->id)->update(['status' => 1]);
                         $data=array('domain'=>$result->domain,"database_name"=>$databaseName);
                         DB::table('site_database_name')->insert($data);
                    }
-                   $i++;
                 }
-            }
+                echo "Total ".$totalDatabaseCount." number of database is created";
+            } else {
+                echo "Domain list is pending";
+            }   
+        } else {
+            echo "Common Database Sql file is not exist";
         }
     }
 }
