@@ -54,30 +54,49 @@ class SiteApi
 		$this->location = $site->city;
 
 		if(!empty($requestAll['type'])) {
-			$this->type =$requestAll['type'];
+			$allTemplatesRow = Template::on('onthefly')->select('html')->where('type',$requestAll['type'])->first();
+			if(!empty($allTemplatesRow)) {
+				$this->type = $requestAll['type'];
+			} else {
+				return response()->json(['response' =>'Please check your parameter'],400);
+			}
 			if($this->type == 'service' || $this->type == 'zip') {
 				if(!empty($requestAll['service'])) {
-					$this->custom_keyword = ucwords(implode(' ',explode('-',$requestAll['service'])));
-				}
-				if(!empty($requestAll['zip'])) {
-					$this->location = $requestAll['zip'];
-					$this->zip = $requestAll['zip'];
-					if(!empty($requestAll['service'])) {
-						$this->ServicePage = 1;
+					if(!empty($this->getKeywordId(ucwords(implode(' ',explode('-',$requestAll['service'])))))) {
+						$this->custom_keyword = ucwords(implode(' ',explode('-',$requestAll['service'])));
+					} else {
+						return response()->json(['response' =>'Please check your parameter'],400);
 					}
 				}
 			}
-		}
-        $allTemplatesRow = Template::on('onthefly')
-								->select('html')
-								->where('type',$this->type)
+			if($this->type == 'zip') {
+				if(!empty($requestAll['zip'])) {
+					$checkZip = LocationDetail::on('onthefly')
+								->select('zip')
+								->where('zip',$requestAll['zip'])
 								->first();
+					if(!empty($checkZip)) {
+						$this->location = $requestAll['zip'];
+						$this->zip = $requestAll['zip'];
+						if(!empty($requestAll['service'])) {
+							$this->ServicePage = 1;
+						}
+					} else {
+						return response()->json(['response' =>'Please check your parameter'],400);
+					}
+				} else {
+					return response()->json(['response' =>'Please check your parameter'],400);
+				}
+			}
+		}
        
         $allServicesList = $this->getServicesList();
         $zipcodes = $this->getZipcodesList();
         $textBlockAndMetaTagInfomation = $this->getTextBlockAndMetaTagInfomation();
 		$this->getLatLongPhone();
-
+		if(!empty($this->phone)) {
+			$this->phone ='('.substr($this->phone,0,3).")-".substr($this->phone,3,3)."-".substr($this->phone,6);
+		}
 		/** 
 		 *  Here We are stating schemas for api
 		*/

@@ -15,15 +15,16 @@ class DatabaseConnection
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
-     */
-    public function handle(Request $request, Closure $next)
-    {
+    */
+
+    public function handle(Request $request, Closure $next) {
+        // $request->domain = 'towingminneapolis.vercel.com';
         if(!empty($request->domain)) {
             $databaseInformation = DB::table("site_database_name")
             ->select("database_name")
             ->where("domain", $request->domain)
             ->first();
-            if(!empty($databaseInformation->database_name)) {
+            if(!empty($databaseInformation->database_name)) {                
                 config(['database.connections.onthefly' => [
                     'driver' => 'mysql',
                     'host' => env('DB_HOST', '127.0.0.1'),
@@ -35,11 +36,11 @@ class DatabaseConnection
                 DB::connection('onthefly');
            } else {
                 $myArray = ['response'=>'This domain database information is not exist'];
-                return response()->json($myArray);
+                return response()->json($myArray,422);
            }
         } else {
             $myArray = ['response'=>'please pass the domain infomation in your request'];
-            return response()->json($myArray);
+            return response()->json($myArray,422);
         }
         return $next($request);
     }

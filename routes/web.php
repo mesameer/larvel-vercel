@@ -3,7 +3,7 @@
 use App\Http\Controllers\DomainResearchController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\SqliteDatabaseScriptController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -45,3 +45,7 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::middleware('database')->group(function () {
+    Route::get('/convert-mysql-sqlite', [SqliteDatabaseScriptController::class, 'convertMysqlSqlite']);
+});
+Route::get('/export-structure-create-database', [SqliteDatabaseScriptController::class, 'exportStructureCreateDatabase']);
