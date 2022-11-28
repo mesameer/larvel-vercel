@@ -88,10 +88,7 @@ class SiteApi
 					return response()->json(['response' =>'Please check your parameter'],400);
 				}
 			}
-		}  else {
-			return response()->json(['response' =>'Please check your parameter'],400);
 		}
-       
        
         $allServicesList = $this->getServicesList();
         $zipcodes = $this->getZipcodesList();

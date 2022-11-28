@@ -17,6 +17,9 @@ class EmailController extends Controller
         if(empty($request->phone)) {
             return response()->json(['response' => 'phone field is required'],400);
         }
+        if(!empty($request->email) && !filter_var($request->email, FILTER_VALIDATE_EMAIL)) {
+            return  response()->json(['response' => 'email field is required'],400);
+        }
         $mailData = [
             'domain' => $request->domain,
             'contactName' => $request->contactName,
