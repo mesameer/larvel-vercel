@@ -62,7 +62,6 @@ return [
             'username' => 'minncp',
             'password' => 'QkRmWmFpMGhFTlRCQVVDRg==',
             'root' => '/home/minncp/htdocs/towingminneapolis.us/database',
-            'password' => 'encryption-password',
             // 'port' => 22,
             // 'timeout' => 30,
         ],
