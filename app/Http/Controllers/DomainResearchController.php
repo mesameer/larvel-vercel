@@ -21,6 +21,8 @@ class DomainResearchController extends Controller
 {
     public function domainReport(Request $request)
     {
+        $recordsPerPage = $request->get('items') ? $request->get('items') : 10;
+        
         $condition = [];
         $whereIn = [];
 
@@ -224,7 +226,7 @@ class DomainResearchController extends Controller
                         }
                     });
                 }
-            })->groupBy($group_by)->paginate(10);
+            })->groupBy($group_by)->paginate($recordsPerPage);
         }
         else {
             // DB::enableQueryLog();
@@ -245,7 +247,7 @@ class DomainResearchController extends Controller
                     });
                 }
             })
-            ->paginate(10);
+            ->paginate($recordsPerPage);
             // dd(DB::getQueryLog());
 
             if ($request->get('group_name')) {
@@ -302,7 +304,10 @@ class DomainResearchController extends Controller
         }
         else if ($search_by == 'Country Name') {
             $searchColumn = 'country';
+
             $searchColumnList[] = 'country';
+            $searchColumnList[] = DB::raw('SUM(zip_population) as zip_population');
+
             $groupBy[] = 'country';
         }
         else if ($search_by == 'State Name') {
@@ -310,6 +315,7 @@ class DomainResearchController extends Controller
 
             $searchColumnList[] = 'country';
             $searchColumnList[] = 'state_name';
+            $searchColumnList[] = DB::raw('SUM(zip_population) as zip_population');
 
             $groupBy[] = 'country';
             $groupBy[] = 'state_name';
@@ -320,6 +326,7 @@ class DomainResearchController extends Controller
             $searchColumnList[] = 'country';
             $searchColumnList[] = 'state_name';
             $searchColumnList[] = 'county_name';
+            $searchColumnList[] = DB::raw('SUM(zip_population) as zip_population');
 
             $groupBy[] = 'country';
             $groupBy[] = 'state_name';
@@ -332,6 +339,7 @@ class DomainResearchController extends Controller
             $searchColumnList[] = 'state_name';
             $searchColumnList[] = 'county_name';
             $searchColumnList[] = 'city_name';
+            $searchColumnList[] = DB::raw('SUM(zip_population) as zip_population');
             
             $groupBy[] = 'country';
             $groupBy[] = 'state_name';
@@ -345,25 +353,25 @@ class DomainResearchController extends Controller
         
         if ($search_by == 'Country Name') {
             foreach ($data as $details) {
-                $dataList[] = ['country' => $details['country'], 'info' => $details['country']];
+                $dataList[] = ['country' => $details['country'], 'info' => $details['country'] . '('. number_format($details['zip_population'], 2) .')'];
                 // $dataList[] = $details['country'] . ', ' . $details['state_name'];
             }
         }
         else if ($search_by == 'State Name') {
             foreach ($data as $details) {
-                $dataList[] = ['country' => $details['country'], 'state_name' => $details['state_name'], 'info' => $details['country'] . ', ' . $details['state_name']];
+                $dataList[] = ['country' => $details['country'], 'state_name' => $details['state_name'], 'info' => $details['country'] . ', ' . $details['state_name'] . ' ('. number_format($details['zip_population'], 2) .')'];
                 // $dataList[] = $details['country'] . ', ' . $details['state_name'];
             }
         }
         else if ($search_by == 'County Name') {
             foreach ($data as $details) {
-                $dataList[] = ['country' => $details['country'], 'state_name' => $details['state_name'], 'county_name' => $details['county_name'], 'info' => $details['country'] . ', ' . $details['state_name'] . ', ' . $details['county_name']];
+                $dataList[] = ['country' => $details['country'], 'state_name' => $details['state_name'], 'county_name' => $details['county_name'], 'info' => $details['country'] . ', ' . $details['state_name'] . ', ' . $details['county_name'] . ' ('. number_format($details['zip_population'], 2) .')'];
                 // $dataList[] = $details['country'] . ', ' . $details['state_name'] . ', ' . $details['county_name'];
             }
         }
         else if ($search_by == 'City Name') {
             foreach ($data as $details) {
-                $dataList[] = ['country' => $details['country'], 'state_name' => $details['state_name'], 'county_name' => $details['county_name'], 'city_name' => $details['city_name'], 'info' => $details['country'] . ', ' . $details['state_name'] . ', County: ' . $details['county_name'] . ', ' . $details['city_name']];
+                $dataList[] = ['country' => $details['country'], 'state_name' => $details['state_name'], 'county_name' => $details['county_name'], 'city_name' => $details['city_name'], 'info' => $details['country'] . ', ' . $details['state_name'] . ', County: ' . $details['county_name'] . ', ' . $details['city_name'] . ' ('. number_format($details['zip_population'], 2) .')'];
                 // $dataList[] = $details['country'] . ', ' . $details['state_name'] . ', County: ' . $details['county_name'] . ', ' . $details['city_name'];
             }
         }
@@ -380,7 +388,11 @@ class DomainResearchController extends Controller
 
         $tldList[] = '.com';
         $tldList[] = '.us';
+        $tldList[] = '.net';
+        $tldList[] = '.org';
         $tldList[] = '.info';
+        $tldList[] = '.co';
+        $tldList[] = '.biz';
 
         $possible_combinations = Helpers::generateDomains($location, $keywords, $tldList, $maintainOrder);
         
