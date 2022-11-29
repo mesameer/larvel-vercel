@@ -17,14 +17,14 @@ class BlogController extends Controller
                 $data['title'] = $result['title'];
                 $data['description'] = $result['description'];
                 $data['image'] = $result['image'];
-                $data['created_at'] = date('F d,Y', strtotime($result['created_at']));
+                $data['created_at'] = $result['created_at'];
                 $data['href'] =  Helpers::makeUrl($result['title']);
                 $fullArray[] = $data;
             }
             return response()->json($fullArray);
         } else {
             $myArray = ['response'=>'blog is not exist for this domain'];
-            return response()->json($myArray,422); 
+            return response()->json($myArray,400); 
         }
         
     }
