@@ -35,7 +35,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/available_domains', [DomainResearchController::class, 'getDomainByLocation'])->name('getDomainByLocation');
 
     Route::get('/autocomplete_city', [DomainResearchController::class, 'allUniqueCities'])->name('autocomplete_city');
-    Route::get('/generate_domains', [DomainResearchController::class, 'allUniqueCities'])->name('autocomplete_city');
+    // Route::get('/generate_domains', [DomainResearchController::class, 'allUniqueCities'])->name('autocomplete_city');
 
     Route::post('/get_zip_codes', [DomainResearchController::class, 'getZipCodes'])->name('getZipCodes');
     Route::post('/get_location_group_zip_codes', [DomainResearchController::class, 'getLocationGroupZipCodes'])->name('getLocationGroupZipCodes');
@@ -45,6 +45,7 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
 Route::middleware('database')->group(function () {
     Route::get('/convert-mysql-sqlite', [SqliteDatabaseScriptController::class, 'convertMysqlSqlite']);
 });

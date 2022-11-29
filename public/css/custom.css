@@ -87,3 +87,9 @@
   max-height: 300px;
   overflow-y: auto;
 }
+
+.bg-login-image {
+  background: url("../img/david-pisnoy-RiGGe25WUw4-unsplash.jpg");
+  background-position: center;
+  background-size: cover;
+}

@@ -52,6 +52,9 @@ $generateBy = ['State Name', 'City Name', 'Group Name'];
                     <input type="hidden" id="search_country" name="search_country" value="{{ request()->get('search_country') }}">
                     <input type="hidden" id="search_state" name="search_state" value="{{ request()->get('search_state') }}">
                     <input type="hidden" id="search_county" name="search_county" value="{{ request()->get('search_county') }}">
+
+                    <input type="hidden" name="generate_by" value="{{ request()->get('generate_by') }}">
+                    <input type="hidden" name="keywords" value="{{ request()->get('keywords') }}">
                 </div>
             </div>
             
@@ -78,7 +81,19 @@ $generateBy = ['State Name', 'City Name', 'Group Name'];
                 <span class="search-tag">
                     <span class="form-tag-search">
                         <span class="text-gray-500">{{ $details['search_by'] }}: </span>
-                        <span class="tag-val">{{ $details['search'] }}</span>
+                        <span class="tag-val">
+                            @if (!empty($details['search_country']))
+                            {{ $details['search_country'] }} |
+                            @endif
+                            @if (!empty($details['search_state']))
+                            {{ $details['search_state'] }} |
+                            @endif
+                            @if (!empty($details['search_county']))
+                            {{ $details['search_county'] }} |
+                            @endif
+
+                            {{ $details['search'] }}
+                        </span>
                         <span data-role="remove"></span>
                     </span>
                     <input type="hidden" name="search_filters[{{ $counter }}][search_by]" value="{{ $details['search_by'] }}" />
@@ -99,7 +114,7 @@ $generateBy = ['State Name', 'City Name', 'Group Name'];
             </div>
             @endif
             <div class="float-right">
-                <button type="submit" class="btn btn-primary" id="filter-search"><i class="fa fa-search"></i> Search</button>
+                <button type="submit" class="btn btn-primary" id="filter-search"><i class="fa fa-search"></i> Add Domain</button>
                 <a href="{{ url('domain_report') }}" class="btn btn-warning"><i class="fa fa-sync"></i> Reset</a>
             </div>
         </form>
@@ -185,15 +200,16 @@ $generateBy = ['State Name', 'City Name', 'Group Name'];
 
         <div class="table-responsive">
             <div class="row">
-                <div class="col-sm-12 col-md-6">
+                <div class="col-sm-12 col-md-3">
                     <a href="#" class="btn btn-primary btn-icon-split">
                         <span class="text"><i class="fas fa-calculator"></i> Total Records</span>
                         <span class="icon">{{ number_format($locations->total()) }}</span>
                     </a>
                 </div>
-                <div class="col-sm-12 col-md-6">
+                <div class="col-sm-12 col-md-7">
                     <div class="float-right">{{ $locations->appends($_GET)->links() }}</div>
                 </div>
+                @include('includes.records_per_page', compact('locations'))
             </div>
             <table class="table table-bordered table-striped data-records" id="dataTable" width="100%" cellspacing="0">
                 <thead>
@@ -254,11 +270,11 @@ $generateBy = ['State Name', 'City Name', 'Group Name'];
                 </thead>
                 <tbody>
                     @php
-                    $counter = ($locations->currentPage() - 1) * $locations->perPage();
+                    $mainCounter = ($locations->currentPage() - 1) * $locations->perPage();
                     @endphp
                     @foreach($locations as $locationDetails)
                     <tr>
-                        <td>{{ ++$counter }}</td>
+                        <td>{{ ++$mainCounter }}</td>
                         <!-- <td>{{ $locationDetails->status }}</td> -->
                         <td>{{ $locationDetails->country }}</td>
                         <td><span class="<?php echo (request()->get('generate_by') == 'State Name' ? 'location-name' : ''); ?>">{{ $locationDetails->state_name }}</span> ({{ $locationDetails->state_short_name ? $locationDetails->state_short_name : $locationDetails->state_name }})
@@ -505,6 +521,10 @@ $generateBy = ['State Name', 'City Name', 'Group Name'];
                 }
 
                 filters.push(newFilter);
+            }
+
+            if (filters.length <= 0) {
+                return true;
             }
 
             formData = {};
