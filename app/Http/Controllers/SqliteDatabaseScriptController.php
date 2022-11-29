@@ -58,6 +58,37 @@ class SqliteDatabaseScriptController extends Controller
     }
 
     public function test() {
+        $filesystem = new Filesystem(new SftpAdapter(
+            new SftpConnectionProvider(
+                '64.71.158.11', // host (required)
+                'minncp', // username (required)
+                'QkRmWmFpMGhFTlRCQVVDRg==', // password (optional, default: null) set to null if privateKey is used
+                null, // private key (optional, default: null) can be used instead of password, set to null if password is set
+                null, // passphrase (optional, default: null), set to null if privateKey is not used or has no passphrase
+                22, // port (optional, default: 22)
+                true, // use agent (optional, default: false)
+                30, // timeout (optional, default: 10)
+                10, // max tries (optional, default: 4)
+                null, // host fingerprint (optional, default: null),
+                null, // connectivity checker (must be an implementation of 'League\Flysystem\PhpseclibV2\ConnectivityChecker' to check if a connection can be established (optional, omit if you don't need some special handling for setting reliable connections)
+            ),
+            '/home/minncp/htdocs/towingminneapolis.us/database', // root path (required)
+            PortableVisibilityConverter::fromArray([
+                'file' => [
+                    'public' => 0640,
+                    'private' => 0604,
+                ],
+                'dir' => [
+                    'public' => 0740,
+                    'private' => 7604,
+                ],
+            ])
+        ));
+        $disk = Storage::disk('sftp');
+        $directories = $disk->directories('home'); // this will only be used for testing to dump and check if the directory exists
+        // $files = $disk->files('/home/minncp/htdocs/towingminneapolis.us/database');
+        dump($directories);die;
+        echo "<pre>";print_r(Storage::disk('sftp')->files('directory'));die;
         
     }
 
