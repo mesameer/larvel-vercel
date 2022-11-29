@@ -33,4 +33,13 @@ class Helpers {
 
         return $possible_domains;
     }
+
+    public static function makeUrl($initial_string) {
+		$final_string = str_replace(
+			array(', ',' ','/',"&","  "),
+			array('-','-','',""," "),
+			$initial_string
+		);
+		return strtolower($final_string);
+	}
 }

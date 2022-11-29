@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\EmailController;
+use App\Http\Controllers\BlogController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -21,6 +23,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::middleware('database')->group(function () {
     Route::get('/site', [SiteController::class, 'index']);
+    Route::get('/blog', [BlogController::class, 'index']);
     Route::post('/contact-form', [EmailController::class, 'contactForm']);
 });
 
