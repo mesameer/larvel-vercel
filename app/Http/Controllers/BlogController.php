@@ -12,14 +12,20 @@ class BlogController extends Controller
         $blogData = Blog::on('onthefly')
                     ->select('*')
                     ->get()->toArray();
-        foreach($blogData as $result) {
-            $data['title'] = $result['title'];
-            $data['description'] = $result['description'];
-            $data['image'] = $result['image'];
-            $data['created_at'] = date('F d,Y', strtotime($result['created_at']));
-            $data['href'] =  Helpers::makeUrl($result['title']);
-            $fullArray[] = $data;
+        if(!empty($blogData)) {
+            foreach($blogData as $result) {
+                $data['title'] = $result['title'];
+                $data['description'] = $result['description'];
+                $data['image'] = $result['image'];
+                $data['created_at'] = date('F d,Y', strtotime($result['created_at']));
+                $data['href'] =  Helpers::makeUrl($result['title']);
+                $fullArray[] = $data;
+            }
+            return response()->json($fullArray);
+        } else {
+            $myArray = ['response'=>'blog is not exist for this domain'];
+            return response()->json($myArray,422); 
         }
-        return response()->json($fullArray);
+        
     }
 }
