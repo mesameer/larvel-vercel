@@ -19,7 +19,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Auth::routes(['register' => false,]);
+Auth::routes(['register' => true,]);
 
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/domain_report', [DomainResearchController::class, 'domainReport'])->name('domainReport');

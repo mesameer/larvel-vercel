@@ -93,3 +93,15 @@
   background-position: center;
   background-size: cover;
 }
+
+.bg-register-image {
+  background: url("../img/patrick-tomasso-fMntI8HAAB8-unsplash.jpg");
+  background-position: center;
+  background-size: cover;
+}
+
+.bg-password-image {
+  background: url("../img/towfiqu-barbhuiya-em5w9_xj3uU-unsplash.jpg");
+  background-position: center;
+  background-size: cover;
+}
