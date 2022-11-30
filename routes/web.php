@@ -16,7 +16,8 @@ use App\Http\Controllers\SqliteDatabaseScriptController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    // return view('welcome');
+    return redirect()->to('login');
 });
 
 Auth::routes(['register' => true,]);
